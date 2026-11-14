@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B4A2A"><link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><title>Eatvero</title>
+<style>
+:root{--iv:#FBF8F2;--fg:#0B4A2A;--mint:#DDEFD6;--lime:#6AAE2E;--red:#C62828;--yel:#D99A00;--grn:#2E8B3A}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,'Segoe UI',Tahoma,sans-serif;background:linear-gradient(180deg,#fff 0,var(--iv) 40%);color:#17301f;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 18px 8px}
+header img{width:38px;height:38px;border-radius:10px}header b{font-size:22px;color:var(--fg);letter-spacing:-.5px}header b span{color:var(--lime)}
+main{padding:8px 18px;max-width:560px;margin:auto;animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:26px;color:var(--fg);margin:8px 0}h3{color:var(--fg);margin:18px 0 8px}
+.card{background:#fff;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0b4a2a14}
+button,.btn{font:inherit;border:0;border-radius:14px;padding:12px 16px;background:var(--fg);color:#fff;cursor:pointer;display:inline-block;margin:4px 0}
+.big{width:100%;padding:16px;font-size:17px;background:linear-gradient(135deg,var(--fg),#1c7a43)}
+.alt{background:var(--mint);color:var(--fg)}.danger{background:#fde8e8;color:var(--red)}
+input,select,textarea{font:inherit;width:100%;padding:12px;border:1.5px solid #cfe0c8;border-radius:12px;background:#fff;margin:4px 0}
+.row{display:flex;gap:8px}.row button{margin:4px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:9px 14px;border-radius:99px;background:var(--mint);color:var(--fg);border:1.5px solid transparent;font-size:14px}
+.chip.on{background:var(--fg);color:#fff}.muted{color:#6b7f70;font-size:14px}.warn{color:var(--red)}
+.item{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:10px;margin:8px 0;box-shadow:0 2px 10px #0b4a2a10;cursor:pointer}
+.item img,.ph{width:52px;height:52px;border-radius:12px;object-fit:cover;background:var(--mint);flex:none}
+.item div{flex:1;min-width:0}.item small{color:#6b7f70}.dot{width:14px;height:14px;border-radius:50%;flex:none}
+.l0{background:var(--grn)}.l1{background:var(--yel)}.l2{background:var(--red)}
+.verdict{border-radius:20px;padding:18px;color:#fff;font-size:20px;font-weight:700}
+.verdict.l0{background:linear-gradient(135deg,#2E8B3A,#6AAE2E)}.verdict.l1{background:linear-gradient(135deg,#C98600,#E8B130)}.verdict.l2{background:linear-gradient(135deg,#B71C1C,#E04545)}
+.fnd{padding:10px 12px;border-radius:12px;margin:6px 0;background:#f4f7f2;border-inline-start:5px solid #9bb;font-size:14px}
+.fnd.red{border-color:var(--red)}.fnd.yellow{border-color:var(--yel)}.fnd.ok{border-color:var(--grn)}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px 0;border-bottom:1px solid #eef3ea}td:last-child{text-align:end}
+.bar{height:8px;border-radius:9px;background:#e3ecdf;overflow:hidden}.bar i{display:block;height:100%;background:var(--lime)}
+.hide{display:none}video{width:100%;border-radius:16px;background:#000;margin-bottom:8px}
+nav{position:fixed;bottom:0;inset-inline:0;display:flex;justify-content:space-around;background:#fffffff2;backdrop-filter:blur(10px);padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid #e3ecdf}
+nav a{display:flex;flex-direction:column;align-items:center;font-size:11px;color:#6b7f70;gap:2px;padding:4px 8px;cursor:pointer}
+nav a.on{color:var(--fg);font-weight:700}nav svg{width:24px;height:24px}
+.hero{text-align:center;padding-top:calc(20px + env(safe-area-inset-top))}.hero img{width:min(70vw,300px)}
+.lang button{width:100%;font-size:18px;margin:6px 0}
+.hb{padding:8px;margin:0;background:var(--mint);color:var(--fg);border-radius:12px;display:flex}.hb svg{width:22px;height:22px}[dir=rtl] .bk{transform:scaleX(-1)}
+</style></head><body><div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" defer></script>
+<script>
+const $=s=>document.querySelector(s);
+const LS=(k,v)=>v===undefined?JSON.parse(localStorage.getItem(k)||'null'):localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const WIL=['Adrar','Chlef','Laghouat','Oum El Bouaghi','Batna','Béjaïa','Biskra','Béchar','Blida','Bouira','Tamanrasset','Tébessa','Tlemcen','Tiaret','Tizi Ouzou','Alger','Djelfa','Jijel','Sétif','Saïda','Skikda','Sidi Bel Abbès','Annaba','Guelma','Constantine','Médéa','Mostaganem','M\'Sila','Mascara','Ouargla','Oran','El Bayadh','Illizi','Bordj Bou Arréridj','Boumerdès','El Tarf','Tindouf','Tissemsilt','El Oued','Khenchela','Souk Ahras','Tipaza','Mila','Aïn Defla','Naâma','Aïn Témouchent','Ghardaïa','Relizane','Timimoun','Bordj Badji Mokhtar','Ouled Djellal','Béni Abbès','In Salah','In Guezzam','Touggourt','Djanet','El M\'Ghair','El Meniaa'];
+const S={ // [en, fr, ar]
+tagline:['Trust What You Eat.','Faites confiance à ce que vous mangez.','ثق بما تأكله.'],
+next:['Continue','Continuer','متابعة'],start:['Get started','Commencer','ابدأ'],
+pName:['Name (optional)','Nom (facultatif)','الاسم (اختياري)'],pAge:['Age (optional)','Âge (facultatif)','العمر (اختياري)'],
+pWil:['Wilaya (optional)','Wilaya (facultatif)','الولاية (اختياري)'],pick:['Choose…','Choisir…','اختر…'],
+cond:['Health profile','Profil santé','الملف الصحي'],
+celiac:['Celiac disease','Maladie cœliaque','مرض السيلياك'],diabetes:['Diabetes','Diabète','السكري'],
+lactose:['Lactose intolerance','Intolérance au lactose','عدم تحمل اللاكتوز'],peanut:['Peanut allergy','Allergie à l’arachide','حساسية الفول السوداني'],
+allergy:['Other food allergies','Autres allergies alimentaires','حساسية غذائية أخرى'],
+home:['Home','Accueil','الرئيسية'],scan:['Scan','Scanner','مسح'],disc:['Discover','Découvrir','اكتشف'],favs:['Favorites','Favoris','المفضلة'],me:['Profile','Profil','حسابي'],
+hello:['Hello','Bonjour','مرحباً'],scanBar:['Scan a barcode','Scanner un code-barres','مسح الباركود'],
+scanLab:['Photo of ingredients','Photo des ingrédients','تصوير المكونات'],upl:['Upload an image','Importer une image','رفع صورة'],
+manual:['Type barcode','Saisir le code-barres','أدخل الباركود'],go:['Search','Chercher','بحث'],
+recent:['Recent scans','Scans récents','آخر عمليات المسح'],none:['Nothing yet','Rien pour l’instant','لا شيء بعد'],
+nf:['Product not found in Open Food Facts:','Produit introuvable dans Open Food Facts :','المنتج غير موجود في Open Food Facts:'],
+nfHint:['Try photographing the ingredients label below.','Essayez de photographier la liste d’ingrédients ci-dessous.','جرّب تصوير قائمة المكونات أدناه.'],
+err:['Network or OCR engine unavailable. Check your connection.','Réseau ou moteur OCR indisponible. Vérifiez la connexion.','الشبكة أو محرك OCR غير متاح. تحقق من الاتصال.'],
+camErr:['Camera unavailable or permission denied.','Caméra indisponible ou permission refusée.','الكاميرا غير متاحة أو تم رفض الإذن.'],
+noBD:['Live barcode detection is not supported by this browser. Use Chrome on Android, or type the code.','Détection en direct non prise en charge par ce navigateur. Utilisez Chrome Android ou saisissez le code.','المسح المباشر غير مدعوم في هذا المتصفح. استخدم Chrome على أندرويد أو اكتب الرمز.'],
+reading:['Reading text…','Lecture du texte…','جارٍ قراءة النص…'],unclear:['Text unclear. Retake a sharper photo, or correct it below.','Texte peu lisible. Reprenez une photo plus nette ou corrigez ci-dessous.','النص غير واضح. أعد التقاط صورة أوضح أو صحّحه أدناه.'],
+review:['Review and correct the extracted text:','Vérifiez et corrigez le texte extrait :','راجع النص المستخرج وصحّحه:'],analyze:['Analyze','Analyser','تحليل'],
+labelPhoto:['Label photo','Photo d’étiquette','صورة ملصق'],
+alt:['Safe alternatives','Alternatives adaptées','بدائل مناسبة'],
+altNone:['No suitable alternatives found in Open Food Facts for this category.','Aucune alternative adaptée trouvée dans Open Food Facts pour cette catégorie.','لم يُعثر على بدائل مناسبة في Open Food Facts لهذه الفئة.'],
+altNote:['Alternatives come from Open Food Facts and match your conditions per available label data only. Verify the package.','Alternatives issues d’Open Food Facts, compatibles avec vos conditions selon les données d’étiquette uniquement. Vérifiez l’emballage.','البدائل من Open Food Facts وتناسب حالتك حسب بيانات الملصق فقط. تحقق من العبوة.'],
+searching:['Searching…','Recherche…','جارٍ البحث…'],
+v0:['Suitable for you','Convient à vous','مناسب لك'],v1:['Caution: incomplete info','Prudence : infos incomplètes','احتياط: معلومات ناقصة'],v2:['Not suitable for you','Non adapté pour vous','غير مناسب لك'],
+mRed:['Conflicting ingredient','Ingrédient en conflit','مكوّن متعارض'],mTr:['Possible traces / cross-contamination warning','Traces possibles / contamination croisée','احتمال آثار / تلوث متبادل'],
+mMaybe:['Unspecified flour or cereal: source unclear','Farine ou céréale non précisée : origine incertaine','دقيق أو حبوب غير محددة المصدر'],
+mMiss:['Ingredient data missing: cannot assess','Ingrédients indisponibles : évaluation impossible','بيانات المكونات غير متوفرة'],
+mCert:['Not labelled gluten-free: gluten absent from the list is not a guarantee','Non étiqueté sans gluten : l’absence dans la liste n’est pas une garantie','غير مُصنَّف خالٍ من الغلوتين: عدم ذكره ليس ضماناً'],
+mCertOk:['Labelled gluten-free (label claim, verify the package)','Étiqueté sans gluten (mention d’étiquette, vérifiez l’emballage)','مُصنَّف خالٍ من الغلوتين (ادعاء الملصق، تحقق من العبوة)'],
+mOk:['No conflicting ingredient found','Aucun ingrédient en conflit trouvé','لم يُعثر على مكوّن متعارض'],
+mAl:['Declared allergens (check yours)','Allergènes déclarés (vérifiez les vôtres)','مسببات حساسية مصرّح بها (تحقق من حالتك)'],
+mDia:['Carbs and sugars per 100 g are shown below. Judge with your care plan, not sugar alone.','Glucides et sucres pour 100 g ci-dessous. Jugez selon votre suivi, pas le sucre seul.','الكربوهيدرات والسكريات لكل 100 غ أدناه. قيّم وفق خطتك العلاجية وليس السكر وحده.'],
+mDiaMiss:['Nutrition data missing for diabetes check','Données nutritionnelles manquantes (diabète)','بيانات التغذية ناقصة (السكري)'],
+mNoC:['Select a health condition in Profile for a personalised check','Choisissez une condition dans Profil pour une analyse personnalisée','اختر حالة صحية في الملف لتحليل مخصص'],
+ing:['Ingredients','Ingrédients','المكونات'],nut:['Nutrition per 100 g','Nutrition pour 100 g','التغذية لكل 100 غ'],
+kcal:['Energy (kcal)','Énergie (kcal)','الطاقة (سعرة)'],carbs:['Carbohydrates (g)','Glucides (g)','الكربوهيدرات (غ)'],sug:['Sugars (g)','Sucres (g)','السكريات (غ)'],fat:['Fat (g)','Lipides (g)','الدهون (غ)'],pro:['Protein (g)','Protéines (g)','البروتين (غ)'],salt:['Salt (g)','Sel (g)','الملح (غ)'],
+comp:['Information completeness','Complétude des informations','اكتمال المعلومات'],
+disc2:['Based only on label data. Not medical advice and not a guarantee of safety. Always check the package and ask your doctor.','Basé uniquement sur les données de l’étiquette. Pas un avis médical ni une garantie de sécurité. Vérifiez l’emballage et consultez votre médecin.','يعتمد فقط على بيانات الملصق. ليس نصيحة طبية ولا ضماناً للسلامة. تحقق من العبوة واستشر طبيبك.'],
+fav:['Save to favorites','Ajouter aux favoris','أضف للمفضلة'],unfav:['Remove from favorites','Retirer des favoris','إزالة من المفضلة'],back:['Back','Retour','رجوع'],
+stores:['Stores','Magasins','المتاجر'],byW:['Search health-food stores in my wilaya','Magasins diététiques dans ma wilaya','متاجر الأغذية الصحية في ولايتي'],near:['Search near my location','Chercher près de moi','ابحث قرب موقعي'],
+storeNote:['Opens an external map search. Eatvero has no verified store or stock data yet.','Ouvre une recherche cartographique externe. Eatvero n’a pas encore de données vérifiées sur les magasins ou stocks.','يفتح بحث خرائط خارجي. لا تتوفر بعد بيانات متاجر أو مخزون موثقة في Eatvero.'],
+soon:['Coming soon: categories, alternatives, comparison, shopping lists, ingredient explainer.','Bientôt : catégories, alternatives, comparaison, listes de courses, explication des ingrédients.','قريباً: الفئات، البدائل، المقارنة، قوائم التسوق، شرح المكونات.'],
+lang:['Language','Langue','اللغة'],priv:['Your profile and history stay on this device only. No account, nothing is sent to us. Barcodes are sent to Open Food Facts to find products.','Votre profil et historique restent sur cet appareil. Aucun compte, rien ne nous est envoyé. Les codes-barres sont envoyés à Open Food Facts pour trouver les produits.','ملفك وسجلك يبقيان على هذا الجهاز فقط. لا حساب ولا إرسال لأي بيانات إلينا. تُرسل الباركودات إلى Open Food Facts للبحث عن المنتجات.'],
+del:['Delete all my data','Supprimer toutes mes données','حذف كل بياناتي'],delQ:['Delete profile, history and favorites?','Supprimer profil, historique et favoris ?','حذف الملف والسجل والمفضلة؟']};
+const IC={back:'M15 5l-7 7 7 7',home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',scan:'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',disc:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',favs:'M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z',me:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'};
+const I=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[k]}"/></svg>`;
+const CONDS=['celiac','diabetes','lactose','peanut','allergy'];
+let P=LS('p')||{lang:null,name:'',age:'',wil:'',conds:[],step:0,done:false},H=LS('h')||[],F=LS('f')||[];
+let view='home',cur=null,tmp={},stream=null,timer=null,stack=[],ALT=[];
+const L=()=>({en:0,fr:1,ar:2})[P.lang||'en'],t=k=>S[k][L()];
+const save=()=>{LS('p',P);LS('h',H);LS('f',F)};
+// ---- analysis (rule-based, multilingual keywords; never invents data) ----
+const KW={celiac:['gluten','wheat','blé','froment','barley','orge','rye','seigle','oat','avoine','malt','semolina','semoule','couscous','spelt','épeautre','kamut','triticale','قمح','شعير','جاودار','شوفان','غلوتين','سميد','كسكس'],
+lactose:['milk','lait','lactose','whey','lactosérum','petit-lait','casein','caséine','butter','beurre','cream','crème','cheese','fromage','yogurt','yoghurt','yaourt','حليب','لبن','زبدة','جبن','قشدة','مصل اللبن','كازين'],
+peanut:['peanut','arachide','cacahu','groundnut','فول سوداني']};
+const TAG={celiac:['en:gluten'],lactose:['en:milk'],peanut:['en:peanuts']};
+const MAYBE=['flour','farine','دقيق'];
+function analyze(p){
+ const txt=' '+(p.ing||'').toLowerCase().replace(/cocoa butter|beurre de cacao|beurre de karité|shea butter|coconut milk|lait de coco|زبدة الكاكاو|حليب جوز الهند/g,' ')+' ';
+ const it=[];let lvl=0;const up=n=>{lvl=Math.max(lvl,n)};
+ const noIng=!(p.ing||'').trim()&&!(p.al||[]).length;
+ if(noIng){it.push(['yellow',t('mMiss')]);up(1)}
+ for(const c of P.conds){
+  if(KW[c]){
+   const hit=KW[c].filter(k=>txt.includes(k)),tg=(p.al||[]).some(x=>TAG[c].includes(x));
+   if(hit.length||tg){it.push(['red',`${t(c)}: ${t('mRed')} (${[...new Set(hit)].join(', ')||'allergen tag'})`]);up(2)}
+   else if((p.tr||[]).some(x=>TAG[c].includes(x))){it.push(['yellow',`${t(c)}: ${t('mTr')}`]);up(1)}
+   else if(c==='celiac'&&MAYBE.some(k=>txt.includes(k))){it.push(['yellow',`${t(c)}: ${t('mMaybe')}`]);up(1)}
+   else if(!noIng)it.push(['ok',`${t(c)}: ${t('mOk')}`]);
+   if(c==='celiac'&&!noIng&&!(hit.length||tg)){const gf=(p.lab||[]).some(x=>/gluten-free|sans-gluten/.test(x));it.push([gf?'ok':'yellow',t(gf?'mCertOk':'mCert')]);if(!gf)up(1)}
+  }
+  if(c==='diabetes'){it.push(['info',t('mDia')]);if(p.carbs==null&&p.sug==null){it.push(['yellow',t('mDiaMiss')]);up(1)}}
+  if(c==='allergy'&&(p.al||[]).length){it.push(['yellow',`${t('mAl')}: ${p.al.map(x=>x.replace(/^\w\w:/,'')).join(', ')}`]);up(1)}
+ }
+ if(!P.conds.length)it.push(['info',t('mNoC')]);
+ const f=[(p.ing||'').trim(),p.carbs!=null,p.sug!=null,p.alK,p.img];
+ return{lvl,it,pct:Math.round(f.filter(Boolean).length/f.length*100)};
+}
+// ---- data ----
+async function lookup(code){
+ code=(code||'').replace(/\D/g,'');tmp={};
+ if(code.length<8){tmp.nf=code||'?';return render()}
+ try{
+  const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=product_name,brands,ingredients_text,allergens_tags,traces_tags,labels_tags,nutriments,image_front_small_url,categories_tags`);
+  const j=await r.json();
+  if(j.status!==1){tmp.nf=code;return render()}
+  const q=j.product,n=q.nutriments||{};
+  show({code,cat:(q.categories_tags||[]).slice(-1)[0],name:q.product_name||code,brand:q.brands||'',ing:q.ingredients_text||'',img:q.image_front_small_url||'',al:q.allergens_tags||[],tr:q.traces_tags||[],lab:q.labels_tags||[],alK:Array.isArray(q.allergens_tags),carbs:n.carbohydrates_100g,sug:n.sugars_100g,fat:n.fat_100g,pro:n.proteins_100g,kcal:n['energy-kcal_100g'],salt:n.salt_100g});
+ }catch(e){
+  const h=H.find(x=>x.p.code===code);if(h)return show(h.p);
+  tmp.err=1;render()}
+}
+function show(p){
+ cur={p,a:analyze(p)};
+ H=H.filter(x=>!(p.code&&x.p.code===p.code));H.unshift({p,lvl:cur.a.lvl,t:Date.now()});H=H.slice(0,50);save();
+ stopCam();tmp={};ALT=[];if(view!=='result')stack.push(view);view='result';render();scrollTo(0,0);
+}
+function openItem(src,i){const p=({h:H,f:F,a:ALT})[src][i].p;cur={p,a:analyze(p)};tmp={};ALT=[];if(view!=='result')stack.push(view);view='result';render();scrollTo(0,0)}
+async function findAlt(){
+ tmp.altBusy=1;tmp.altDone=0;render();
+ try{
+  const r=await fetch(`https://world.openfoodfacts.org/api/v2/search?categories_tags=${encodeURIComponent(cur.p.cat)}&sort_by=unique_scans_n&page_size=40&fields=code,product_name,brands,ingredients_text,allergens_tags,traces_tags,labels_tags,nutriments,image_front_small_url`);
+  const j=await r.json();
+  ALT=(j.products||[]).filter(q=>q.code!==cur.p.code&&(q.ingredients_text||'').trim()&&Array.isArray(q.allergens_tags)).map(q=>{const n=q.nutriments||{};return{code:q.code,name:q.product_name||q.code,brand:q.brands||'',ing:q.ingredients_text,img:q.image_front_small_url||'',al:q.allergens_tags,tr:q.traces_tags||[],lab:q.labels_tags||[],alK:true,carbs:n.carbohydrates_100g,sug:n.sugars_100g,fat:n.fat_100g,pro:n.proteins_100g,kcal:n['energy-kcal_100g'],salt:n.salt_100g,cat:cur.p.cat}}).map(p=>({p,lvl:analyze(p).lvl})).filter(x=>x.lvl===0).slice(0,8);
+ }catch(e){tmp.err=1;ALT=[]}
+ tmp.altBusy=0;tmp.altDone=1;render();
+}
+const isFav=p=>p.code&&F.some(x=>x.p.code===p.code);
+function toggleFav(){const p=cur.p;if(isFav(p))F=F.filter(x=>x.p.code!==p.code);else F.unshift({p});save();render()}
+// ---- camera barcode ----
+async function startCam(){
+ stopCam();tmp={};
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});}catch(e){tmp.cam=1;return render()}
+ const v=$('#v');v.srcObject=stream;v.classList.remove('hide');await v.play();
+ if(!('BarcodeDetector' in window)){$('#msg').textContent=t('noBD');return}
+ const d=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});
+ timer=setInterval(async()=>{try{const r=await d.detect(v);if(r.length){const c=r[0].rawValue;stopCam();lookup(c)}}catch(e){}},400);
+}
+function stopCam(){clearInterval(timer);if(stream){stream.getTracks().forEach(x=>x.stop());stream=null}}
+// ---- OCR ----
+async function ocr(inp){
+ const f=inp.files[0];if(!f)return;
+ if(typeof Tesseract==='undefined'){tmp={err:1};return render()}
+ tmp={busy:1};render();
+ try{const{data}=await Tesseract.recognize(f,'eng+fra+ara');tmp={ocr:data.text.trim(),unclear:data.confidence<50||data.text.trim().length<25}}catch(e){tmp={err:1}}
+ render();
+}
+const analyzeOcr=()=>show({code:null,name:t('labelPhoto'),brand:'',ing:$('#ta').value,img:'',al:[],tr:[],lab:[],alK:false});
+// ---- views ----
+function list(a,src){return a.length?a.map((x,i)=>`<div class=item onclick="openItem('${src}',${i})">${x.p.img?`<img src="${esc(x.p.img)}" alt="">`:'<div class=ph></div>'}<div><b>${esc(x.p.name)}</b><br><small>${esc(x.p.brand)}</small></div>${src==='h'?`<span class="dot l${x.lvl}"></span>`:''}</div>`).join(''):`<p class=muted>${t('none')}</p>`}
+const chips=(on)=>CONDS.map(c=>`<span class="chip ${P.conds.includes(c)?'on':''}" onclick="togC('${c}')">${t(c)}</span>`).join('');
+const wilSel=()=>`<select onchange="P.wil=this.value;save()"><option value="">${t('pick')}</option>${WIL.map((w,i)=>`<option ${P.wil===w?'selected':''}>${w}</option>`).join('')}</select>`;
+const views={
+home:()=>`<h1>${t('hello')}${P.name?', '+esc(P.name):''}</h1><button class=big onclick="go('scan')">${t('scanBar')}</button><h3>${t('cond')}</h3><div class=chips>${P.conds.length?P.conds.map(c=>`<span class="chip on">${t(c)}</span>`).join(''):`<span class=muted>${t('mNoC')}</span>`}</div><h3>${t('recent')}</h3>${list(H.slice(0,5),'h')}`,
+scan:()=>`<div class=card><video id=v playsinline muted class=hide></video><p id=msg class=muted></p><button class=big onclick=startCam()>${t('scanBar')}</button><div class=row><input id=bc inputmode=numeric placeholder="${t('manual')}"><button onclick="lookup($('#bc').value)">${t('go')}</button></div>${tmp.nf?`<p class=warn>${t('nf')} ${esc(tmp.nf)}<br>${t('nfHint')}</p>`:''}${tmp.cam?`<p class=warn>${t('camErr')}</p>`:''}${tmp.err?`<p class=warn>${t('err')}</p>`:''}</div>
+<div class=card><h3 style="margin-top:0">${t('scanLab')}</h3><label class=btn>${t('scanLab')}<input type=file accept="image/*" capture=environment hidden onchange=ocr(this)></label> <label class="btn alt">${t('upl')}<input type=file accept="image/*" hidden onchange=ocr(this)></label>${tmp.busy?`<p>${t('reading')}</p>`:''}${tmp.ocr!==undefined?`<p class="${tmp.unclear?'warn':'muted'}">${tmp.unclear?t('unclear'):t('review')}</p><textarea id=ta rows=8>${esc(tmp.ocr)}</textarea><button class=big onclick=analyzeOcr()>${t('analyze')}</button>`:''}</div>`,
+disc:()=>`<h1>${t('disc')}</h1><div class=card><h3 style="margin-top:0">${t('stores')}</h3><button class=big onclick=mapW()>${t('byW')}</button><button class="big alt" onclick=mapN()>${t('near')}</button><p class=muted>${t('storeNote')}</p></div><p class=muted>${t('soon')}</p>`,
+favs:()=>`<h1>${t('favs')}</h1>${list(F,'f')}`,
+me:()=>`<h1>${t('me')}</h1><div class=card><input placeholder="${t('pName')}" value="${esc(P.name)}" oninput="P.name=this.value;save()"><input type=number placeholder="${t('pAge')}" value="${esc(P.age)}" oninput="P.age=this.value;save()">${wilSel()}</div><div class=card><h3 style="margin-top:0">${t('cond')}</h3><div class=chips>${chips()}</div></div><div class=card><h3 style="margin-top:0">${t('lang')}</h3><div class=chips>${[['ar','العربية'],['fr','Français'],['en','English']].map(([k,n])=>`<span class="chip ${P.lang===k?'on':''}" onclick="P.lang='${k}';save();render()">${n}</span>`).join('')}</div></div><p class=muted>${t('priv')}</p><button class=danger onclick=wipe()>${t('del')}</button>`,
+result:()=>{const{p,a}=cur;const nv=(k,v)=>v==null?'':`<tr><td>${t(k)}</td><td>${Math.round(v*10)/10}</td></tr>`;
+ const rows=nv('kcal',p.kcal)+nv('carbs',p.carbs)+nv('sug',p.sug)+nv('fat',p.fat)+nv('pro',p.pro)+nv('salt',p.salt);
+ return`<div class=item style="cursor:default">${p.img?`<img src="${esc(p.img)}" alt="">`:'<div class=ph></div>'}<div><b>${esc(p.name)}</b><br><small>${esc(p.brand)}</small></div></div>
+<div class="verdict l${a.lvl}"><span style="font-size:34px;vertical-align:middle">${['✓','!','✗'][a.lvl]}</span> ${t('v'+a.lvl)}</div>${a.it.map(([k,m])=>`<div class="fnd ${k}">${esc(m)}</div>`).join('')}
+<div class=card><b>${t('comp')}: ${a.pct}%</b><div class=bar><i style="width:${a.pct}%"></i></div></div>
+<div class=card><h3 style="margin-top:0">${t('ing')}</h3><p>${esc(p.ing)||'<span class=muted>—</span>'}</p></div>
+${rows?`<div class=card><h3 style="margin-top:0">${t('nut')}</h3><table>${rows}</table></div>`:''}
+${p.code?`<button class=big onclick=toggleFav()>${t(isFav(p)?'unfav':'fav')}</button>`:''}${p.cat?`<button class="big alt" onclick=findAlt()>${t('alt')}</button>`:''}${tmp.altBusy?`<p>${t('searching')}</p>`:''}${tmp.err?`<p class=warn>${t('err')}</p>`:''}${tmp.altDone?(ALT.length?`${list(ALT,'a')}<p class=muted>${t('altNote')}</p>`:`<p class=muted>${t('altNone')}</p>`):''}<p class=muted>${t('disc2')}</p>`}};
+function togC(c){const i=P.conds.indexOf(c);i<0?P.conds.push(c):P.conds.splice(i,1);save();render()}
+function go(v){stopCam();tmp={};if(v!==view)stack.push(view);view=v;render();scrollTo(0,0)}
+function tab(v){stopCam();tmp={};stack=[];view=v;render();scrollTo(0,0)}
+const goHome=()=>tab('home');
+function goBack(){stopCam();if(!P.done){P.step=0;save();return render()}tmp={};view=stack.pop()||'home';render();scrollTo(0,0)}
+function mapW(){if(!P.wil){go('me');return}open('https://www.google.com/maps/search/'+encodeURIComponent('health food store '+P.wil+' Algeria'))}
+function mapN(){navigator.geolocation.getCurrentPosition(p=>open(`https://www.google.com/maps/search/health+food+store/@${p.coords.latitude},${p.coords.longitude},14z`),()=>{})}
+function wipe(){if(confirm(t('delQ'))){localStorage.clear();P={lang:null,name:'',age:'',wil:'',conds:[],step:0,done:false};H=[];F=[];view='home';render()}}
+const hdr=(back,home)=>`<header>${back?`<button class=hb onclick=goBack()><span class=bk style="display:flex">${I('back')}</span></button>`:''}<img src="icon-192.png" alt=""><b>Eat<span>vero</span></b>${home?`<button class=hb style="margin-inline-start:auto" onclick=goHome()>${I('home')}</button>`:''}</header>`;
+function onboard(){
+ if(P.step===0)return hdr(0,0)+`<main class=lang><h1 style="text-align:center">Eatvero</h1><p class=muted style="text-align:center">Trust What You Eat.</p><button onclick="P.lang='ar';P.step=1;save();render()">العربية</button><button onclick="P.lang='fr';P.step=1;save();render()">Français</button><button onclick="P.lang='en';P.step=1;save();render()">English</button></main>`;
+ return hdr(1,0)+`<main><h1>${t('cond')}</h1><div class=chips>${chips()}</div><br><button class=big onclick="P.done=true;view='scan';save();render()">${t('start')}</button></main>`;
+}
+function render(){
+ document.documentElement.lang=P.lang||'en';document.documentElement.dir=P.lang==='ar'?'rtl':'ltr';
+ const a=$('#app');
+ if(!P.done){a.innerHTML=onboard();return}
+ const nav=['home','scan','disc','favs','me'].map(k=>`<a class="${view===k||(view==='result'&&k==='scan')?'on':''}" onclick="tab('${k}')">${I(k)}${t(k)}</a>`).join('');
+ a.innerHTML=hdr(stack.length>0,view!=='home')+`<main>${views[view]()}</main><nav>${nav}</nav>`;
+}
+render();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+</script></body></html>
